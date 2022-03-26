@@ -20,7 +20,7 @@ def update_info(base):
 def print_info(base):
     print('Name                  Market capitalization        Price')
     for item in base:
-        print('{0:21} {1:28} {2:21}'.format(base[item]['name'], base[item]['market_cap'], base[item]['price_usd']))
+        print(f"{base[item]['name']:21} {base[item]['market_cap']:28} {base[item]['price_usd']:21}" )
 
 
 def find_by_name(name, base):
@@ -42,10 +42,10 @@ def find_by_name(name, base):
             start = mid
             mid = int((end - start) / 2) + start
     if index == -1:
-        print("Can't find {0}".format(name))
+        print(f"Can't find {name}")
     else:
-        print('{0:21} {1:28} {2:21}'.format(sorted_base[index][1]['name'], sorted_base[index][1]['market_cap'],
-                                            sorted_base[index][1]['price_usd']))
+        print(f"{sorted_base[index][1]['name']:21} {sorted_base[index][1]['market_cap']:28} "
+              f"{sorted_base[index][1]['price_usd']:21}")
 
 
 if __name__ == '__main__':
