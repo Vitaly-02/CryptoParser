@@ -6,15 +6,18 @@ from bs4 import BeautifulSoup
 def update_info(base):
     url = 'https://coinmarketcap.com'
     page = requests.get(url)
-    soup = BeautifulSoup(page.text, 'html.parser')
-    names = soup.find_all(class_='sc-1eb5slv-0 iworPT')
-    prices = soup.find_all(class_='sc-131di3y-0 cLgOOr')
-    market_caps = soup.find_all(class_="sc-1ow4cwt-1 ieFnWP")
+    if page.status_code == 200:
+        soup = BeautifulSoup(page.text, 'html.parser')
+        names = soup.find_all(class_='sc-1eb5slv-0 iworPT')
+        prices = soup.find_all(class_='sc-131di3y-0 cLgOOr')
+        market_caps = soup.find_all(class_="sc-1ow4cwt-1 ieFnWP")
 
-    for i in range(0, len(names) - 9):
-        currency = {i: {'name': names[i + 9].get_text(), 'market_cap': market_caps[i].get_text(),
-                        'price_usd': prices[i + 3].get_text()}}
-        base.update(currency)
+        for i in range(0, len(names) - 9):
+            currency = {i: {'name': names[i + 9].get_text(), 'market_cap': market_caps[i].get_text(),
+                            'price_usd': prices[i + 3].get_text()}}
+            base.update(currency)
+    else:
+        print('An error occurred during a request to the site\n')
 
 
 def print_info(base):
