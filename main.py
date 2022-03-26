@@ -34,16 +34,16 @@ def find_by_name(name, base):
     end = len(sorted_base) - 1
     mid = int(end / 2)
     index = -1
-    while start < mid < end:
+    while start <= 9 and end >= 0:
         if sorted_base[mid][1]['name'] == name:
             index = mid
             break
         elif sorted_base[mid][1]['name'] > name:
-            end = mid
-            mid = int(end / 2)
+            end = mid - 1
+            mid = int((start + end) / 2)
         else:
-            start = mid
-            mid = int((end - start) / 2) + start
+            start = mid + 1
+            mid = int((start + end) / 2)
     if index == -1:
         print(f"Can't find {name}")
     else:
