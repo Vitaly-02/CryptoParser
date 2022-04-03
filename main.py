@@ -1,29 +1,42 @@
 import os
-import requests
-from bs4 import BeautifulSoup
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
 
 def update_info(base):
-    url = 'https://coinmarketcap.com'
-    page = requests.get(url)
-    if page.status_code == 200:
-        soup = BeautifulSoup(page.text, 'html.parser')
-        names = soup.find_all(class_='sc-1eb5slv-0 iworPT')
-        prices = soup.find_all(class_='sc-131di3y-0 cLgOOr')
-        market_caps = soup.find_all(class_="sc-1ow4cwt-1 ieFnWP")
+    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 
-        for i in range(0, len(names) - 9):
-            currency = {i: {'name': names[i + 9].get_text(), 'market_cap': market_caps[i].get_text(),
-                            'price_usd': prices[i + 3].get_text()}}
-            base.update(currency)
-    else:
-        print('An error occurred during a request to the site\n')
+    parameters = {
+        'start': '1',
+        'limit': '25',
+        'convert': 'USD'
+    }
+    headers = {
+        'Accepts': 'application/json',
+        'X-CMC_PRO_API_KEY': 'your_api_key',
+    }
+
+    session = Session()
+    session.headers.update(headers)
+
+    try:
+        response = session.get(url, params=parameters)
+        results = response.json()
+        data = results['data']
+        for currency in data:
+            info = {currency['id']: {'name': currency['name'], 'market_cap': currency['quote']['USD']['market_cap'],
+                                     'price_usd': currency['quote']['USD']['price']}}
+            base.update(info)
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        print(e)
+
+    print_info(base)
 
 
 def print_info(base):
     print('Name                  Market capitalization        Price')
     for item in base:
-        print(f"{base[item]['name']:21} {base[item]['market_cap']:28} {base[item]['price_usd']:21}" )
+        print(f"{base[item]['name']:15} {base[item]['market_cap']:28} {base[item]['price_usd']:21}")
 
 
 def find_by_name(name, base):
